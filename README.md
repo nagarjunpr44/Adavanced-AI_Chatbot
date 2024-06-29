@@ -1,6 +1,8 @@
 # Adavanced-AI_Chatbot
 
 
+```markdown
+
 This repository contains a Jupyter notebook that demonstrates how to create an AI chatbot using the Retrieval-Augmented Generation (RAG) stack with Astra DB and OpenAI's language model. The chatbot can retrieve context from a vector database and generate responses based on the provided context.
 
 ## Overview
@@ -47,101 +49,23 @@ Alternatively, you can install the packages directly in the notebook:
 
 ## Usage
 
-1. **Configure Environment Variables**: Enter your Astra DB API endpoint, application token, and OpenAI API key.
-
-```python
-import os
-from getpass import getpass
-
-os.environ["ASTRA_DB_API_ENDPOINT"] = "enter astra db api endpoint"
-os.environ["ASTRA_DB_APPLICATION_TOKEN"] = "enter astra db application token"
-os.environ["OPENAI_API_KEY"] = getpass("Enter your OpenAI API Key: ")
-```
-
+1. **Configure Environment Variables**: Set your Astra DB API endpoint, application token, and OpenAI API key.
 2. **Create RAG Pipeline**: Configure the embedding model and vector store.
-
-```python
-from langchain_astradb import AstraDBVectorStore
-from langchain_openai import OpenAIEmbeddings
-
-embedding = OpenAIEmbeddings()
-vstore = AstraDBVectorStore(
-    collection_name="test",
-    embedding=embedding,
-    token=os.getenv("ASTRA_DB_APPLICATION_TOKEN"),
-    api_endpoint=os.getenv("ASTRA_DB_API_ENDPOINT"),
-)
-print("Astra vector store configured")
-```
-
 3. **Load Dataset**: Load a sample dataset of philosopher quotes.
-
-```python
-from datasets import load_dataset
-
-philo_dataset = load_dataset("datastax/philosopher-quotes")["train"]
-print("An example entry:")
-print(philo_dataset[16])
-```
-
 4. **Prepare Documents**: Create a set of documents from the dataset.
-
-```python
-from langchain.schema import Document
-
-docs = []
-for entry in philo_dataset:
-    metadata = {"author": entry["author"]}
-    if entry["tags"]:
-        for tag in entry["tags"].split(";"):
-            metadata[tag] = "y"
-    doc = Document(page_content=entry["quote"], metadata=metadata)
-    docs.append(doc)
-```
-
 5. **Insert Documents**: Add the documents to the vector store.
-
-```python
-inserted_ids = vstore.add_documents(docs)
-print(f"\nInserted {len(inserted_ids)} documents.")
-```
-
 6. **Retrieve and Generate Response**: Use the model to generate responses based on retrieved context.
-
-```python
-from langchain.prompts import ChatPromptTemplate
-from langchain.chat_models import ChatOpenAI
-from langchain.schema.output_parser import StrOutputParser
-from langchain.schema.runnable import RunnablePassthrough
-
-retriever = vstore.as_retriever(search_kwargs={"k": 3})
-
-prompt_template = """
-Answer the question based only on the supplied context. If you don't know the answer, say you don't know the answer.
-Context: {context}
-Question: {question}
-Your answer:
-"""
-prompt = ChatPromptTemplate.from_template(prompt_template)
-model = ChatOpenAI()
-
-chain = (
-    {"context": retriever, "question": RunnablePassthrough()}
-    | prompt
-    | model
-    | StrOutputParser()
-)
-
-chain.invoke("In the given context, what is happiness and can you explain more and who is the author?")
-```
-
 7. **Cleanup**: Delete the collection and all documents in the collection.
 
-```python
-vstore.delete_collection()
-```
+For detailed instructions, refer to the notebook.
 
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+```
+
+Feel free to modify this Markdown to better suit the specifics of your project and repository structure.
