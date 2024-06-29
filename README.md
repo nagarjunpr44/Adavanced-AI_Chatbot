@@ -1,8 +1,6 @@
 # Adavanced-AI_Chatbot
 
 
-# AI Chatbot with RAG Stack
-
 This repository contains a Jupyter notebook that demonstrates how to create an AI chatbot using the Retrieval-Augmented Generation (RAG) stack with Astra DB and OpenAI's language model. The chatbot can retrieve context from a vector database and generate responses based on the provided context.
 
 ## Overview
